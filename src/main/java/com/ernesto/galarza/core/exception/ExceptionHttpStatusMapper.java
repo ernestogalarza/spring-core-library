@@ -1,7 +1,8 @@
 package com.ernesto.galarza.core.exception;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 
-
+@Slf4j
 public enum ExceptionHttpStatusMapper {
     NULL_POINTER_EXCEPTION(NullPointerException.class, HttpStatus.BAD_REQUEST),
     ILLEGAL_ARGUMENT_EXCEPTION(IllegalArgumentException.class, HttpStatus.BAD_REQUEST),
@@ -27,6 +28,7 @@ public enum ExceptionHttpStatusMapper {
     // Método helper para obtener HttpStatus según la excepción
     public static HttpStatus getStatus(Exception ex) {
         for (ExceptionHttpStatusMapper mapper : values()) {
+           // log.info(mapper.getClass().toString());
             if (mapper.getExceptionClass().isAssignableFrom(ex.getClass())) {
                 return mapper.getHttpStatus();
             }

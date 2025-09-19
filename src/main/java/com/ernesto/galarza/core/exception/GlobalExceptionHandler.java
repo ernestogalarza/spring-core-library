@@ -1,5 +1,6 @@
 package com.ernesto.galarza.core.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -9,11 +10,14 @@ import reactor.core.publisher.Mono;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public Mono<Map<String, Object>> handleException(Exception ex, ServerWebExchange exchange) {
+        log.info("===>info");
+        log.info(ex.getClass().toString());
         HttpStatus status = ExceptionHttpStatusMapper.getStatus(ex);
         exchange.getResponse().setStatusCode(status);
 

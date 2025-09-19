@@ -3,7 +3,7 @@ package com.ernesto.galarza.core.entity;
 import java.time.LocalDateTime;
 
 
-public class ApiError {
+public class ApiErrorException {
     private LocalDateTime timestamp;
     private int status;
     private String error;
