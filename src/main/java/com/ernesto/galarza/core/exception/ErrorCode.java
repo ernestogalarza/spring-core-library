@@ -1,21 +1,27 @@
 package com.ernesto.galarza.core.exception;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.springframework.lang.Nullable;
 
 import java.util.Map;
 
 import static java.util.Map.entry;
 
-@Getter
-@AllArgsConstructor
+
 public enum ErrorCode {
     GENERAL_001("EGE001"),
     INVALID_REQUEST("EGR001"),
     NOT_FOUND("EGF001");
 
     private final String code;
+
+    ErrorCode(String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
 
     static final Map<ErrorCode, String> MAP_DESCRIPTION = Map.ofEntries(
             entry(GENERAL_001, "Error general. Please contact with administrator."),
