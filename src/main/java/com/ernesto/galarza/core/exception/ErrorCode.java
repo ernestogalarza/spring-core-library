@@ -1,5 +1,6 @@
 package com.ernesto.galarza.core.exception;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 
 import java.util.Map;
@@ -7,32 +8,27 @@ import java.util.Map;
 import static java.util.Map.entry;
 
 
-public enum ErrorCode {
-    GENERAL_001("EGE001"),
-    INVALID_REQUEST("EGR001"),
-    NOT_FOUND("EGF001");
+public enum ErrorCode implements IErrorCode {
+    GENERAL_001("EGE001", HttpStatus.INTERNAL_SERVER_ERROR, "General error. Please contact admin."),
+    INVALID_REQUEST("EGR001", HttpStatus.BAD_REQUEST, "Invalid request. Review payload."),
+    NOT_FOUND("EGF001", HttpStatus.NOT_FOUND, "Resource not found.");
 
     private final String code;
+    private final HttpStatus httpStatus;
+    private final String description;
 
-    ErrorCode(String code) {
+    ErrorCode(String code, HttpStatus httpStatus, String description) {
         this.code = code;
+        this.httpStatus = httpStatus;
+        this.description = description;
     }
 
-    public String getCode() {
-        return code;
-    }
+    @Override
+    public String getCode() { return code; }
 
+    @Override
+    public String getDescription() { return description; }
 
-    static final Map<ErrorCode, String> MAP_DESCRIPTION = Map.ofEntries(
-            entry(GENERAL_001, "Error general. Please contact with administrator."),
-            entry(INVALID_REQUEST, "Invalid Request.Please review your payload"),
-            entry(NOT_FOUND, "Resource not available."));
-
-
-    @Nullable
-    public static String getDescription(ErrorCode code) {
-        return MAP_DESCRIPTION.get(code);
-    }
-
-
+    @Override
+    public HttpStatus getHttpStatus() { return httpStatus; }
 }

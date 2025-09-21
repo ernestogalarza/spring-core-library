@@ -1,31 +1,37 @@
 package com.ernesto.galarza.core.exception;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
+import com.ernesto.galarza.core.entity.ApiException;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.HashMap;
 import java.util.Map;
 
-@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    public Mono<Map<String, Object>> handleException(Exception ex, ServerWebExchange exchange) {
-        log.info("===>info");
-        log.info(ex.getClass().toString());
-        HttpStatus status = ExceptionHttpStatusMapper.getStatus(ex);
-        exchange.getResponse().setStatusCode(status);
+    // Maneja ApiException lanzadas por core o proyectos hijos
+    @ExceptionHandler(ApiException.class)
+    public Mono<ResponseEntity<Map<String, Object>>> handleApiException(ApiException ex) {
+        IErrorCode errorCode = ex.getErrorCode();
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("error", ex.getMessage());
-        body.put("status", status.value());
+        Map<String, Object> body = Map.of(
+                "code", errorCode.getCode(),
+                "message", errorCode.getDescription()
+        );
 
-        return Mono.just(body);
+        return Mono.just(ResponseEntity.status(errorCode.getHttpStatus()).body(body));
     }
 
+    // Maneja cualquier otra excepción no controlada
+    @ExceptionHandler(Exception.class)
+    public Mono<ResponseEntity<Map<String, Object>>> handleGenericException(Exception ex) {
+        Map<String, Object> body = Map.of(
+                "code", ErrorCode.GENERAL_001.getCode(),
+                "message", "Unexpected error: " + ex.getMessage()
+        );
+
+        return Mono.just(ResponseEntity.status(ErrorCode.GENERAL_001.getHttpStatus()).body(body));
+    }
 }
